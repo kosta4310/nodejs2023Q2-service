@@ -1,5 +1,7 @@
 # Home Library Service
 
+Для валидации схемы юзердто юзается Joi
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).

@@ -10,10 +10,17 @@ import {
   Post,
   Put,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdatePasswordDto } from './interface';
+import {
+  CreateUserDto,
+  UpdatePasswordDto,
+  createUserSchema,
+  updateUserSchema,
+} from './interface';
 import { UserLessPassword } from './userLessPassword';
+import { JoiValidationPipe } from './validationSchema';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
@@ -35,18 +42,22 @@ export class UserController {
     return new UserLessPassword(user);
   }
 
+  @UsePipes(new JoiValidationPipe(createUserSchema))
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.createUser(createUserDto);
     return new UserLessPassword(user);
   }
 
+  // @UsePipes(new JoiValidationPipe(updateUserSchema))
   @Put(':id')
   async updatePasswordUser(
-    @Body() updatePasswordDto: UpdatePasswordDto,
+    @Body(new JoiValidationPipe(updateUserSchema))
+    updatePasswordDto: UpdatePasswordDto,
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
-    return this.userService.updatePassword(updatePasswordDto, id);
+    const user = await this.userService.updatePassword(updatePasswordDto, id);
+    return new UserLessPassword(user);
   }
 
   @HttpCode(204)
