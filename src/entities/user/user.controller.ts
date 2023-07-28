@@ -20,7 +20,7 @@ import {
   updateUserSchema,
 } from './interface';
 import { UserLessPassword } from './userLessPassword';
-import { JoiValidationPipe } from './validationSchema';
+import { JoiValidationPipe } from '../utilities/validationPipe';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
@@ -49,7 +49,6 @@ export class UserController {
     return new UserLessPassword(user);
   }
 
-  // @UsePipes(new JoiValidationPipe(updateUserSchema))
   @Put(':id')
   async updatePasswordUser(
     @Body(new JoiValidationPipe(updateUserSchema))
