@@ -9,10 +9,25 @@ import { AlbumModule } from './entities/album/album.module';
 import { DbAlbumService } from './db/dbAlbum.service';
 import { TrackModule } from './entities/track/track.module';
 import { DbTrackService } from './db/dbTrack.service';
+import { FavsModule } from './entities/favs/favs.module';
+import { DbFavsService } from './db/dbFavs.service';
 
 @Module({
-  imports: [UserModule, DbModule, ArtistModule, AlbumModule, TrackModule],
-  providers: [AppService, DbArtistService, DbAlbumService, DbTrackService],
+  imports: [
+    UserModule,
+    DbModule,
+    ArtistModule,
+    AlbumModule,
+    TrackModule,
+    FavsModule,
+  ],
+  providers: [
+    AppService,
+    DbArtistService,
+    DbAlbumService,
+    DbTrackService,
+    DbFavsService,
+  ],
   controllers: [AppController],
 })
 export class AppModule {}
