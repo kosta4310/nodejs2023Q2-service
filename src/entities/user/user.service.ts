@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { DbUserService } from 'src/db/dbUser.service';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto, UpdatePasswordDto } from './interface';
+import { getHashedPassword } from './utils/getHash';
 
 @Injectable()
 export class UserService {
@@ -22,14 +22,21 @@ export class UserService {
   }
 
   async createUser(dto: CreateUserDto) {
+    const hashedPassword = getHashedPassword(dto.password);
+    dto.password = hashedPassword;
     return await this.dbUser.create({ data: dto });
   }
 
   async updatePassword(dto: UpdatePasswordDto, id: string) {
     const user = await this.dbUser.findUnique({ id });
 
+    const oldHashedPassword = getHashedPassword(dto.oldPassword);
+
     if (user) {
-      if (user.password === dto.oldPassword) {
+      if (user.password === oldHashedPassword) {
+        const newHashedPassword = getHashedPassword(dto.newPassword);
+        dto.newPassword = newHashedPassword;
+
         return await this.dbUser.update({ data: dto, id });
       }
       throw new HttpException(`OldPassword is wrong`, 403);

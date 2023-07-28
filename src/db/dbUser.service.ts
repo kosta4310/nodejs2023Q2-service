@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import {
   CreateUserDto,
   UpdatePasswordDto,
@@ -19,7 +19,7 @@ export class DbUserService {
   }
 
   async create({ data }: { data: CreateUserDto }) {
-    const id = uuidv4();
+    const id = randomUUID({ disableEntropyCache: true });
     const version = 1;
     const createdAt = Date.now();
     const updatedAt = createdAt;
