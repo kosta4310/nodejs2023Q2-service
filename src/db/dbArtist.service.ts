@@ -2,11 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Artist, CreateArtistDto } from 'src/entities/artist/interface';
 
+type DataFindMany = { key?: keyof Artist; value?: any };
+
 @Injectable()
 export class DbArtistService {
   private db: Array<Artist> = [];
 
-  async findMany() {
+  async findMany({ key, value }: DataFindMany) {
+    if (key && value) {
+      if (!Array.isArray(value)) {
+        return this.db.filter((item) => item[key] === value);
+      }
+      return this.db.filter((item) => value.includes(item[key]));
+    }
     return this.db;
   }
 
