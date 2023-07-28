@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { DbAlbumService } from 'src/db/dbAlbum.service';
-import { CreateAlbumDto, UpdateAlbumDto } from './interface';
+import { CreateAlbumDto } from './interface';
 
 @Injectable()
 export class AlbumService {
@@ -24,7 +24,7 @@ export class AlbumService {
     return await this.dbAlbum.create({ data: dto });
   }
 
-  async updateAlbum(dto: UpdateAlbumDto, id: string) {
+  async updateAlbum(dto: CreateAlbumDto, id: string) {
     const album = await this.dbAlbum.findUnique({ id });
 
     if (album) {

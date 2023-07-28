@@ -2,12 +2,16 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { DbArtistService } from 'src/db/dbArtist.service';
 import { CreateArtistDto } from './interface';
 import { DbAlbumService } from 'src/db/dbAlbum.service';
+import { DbTrackService } from 'src/db/dbTrack.service';
+import { Album } from '../album/interface';
+import { Track } from '../track/interface';
 
 @Injectable()
 export class ArtistService {
   constructor(
     private dbArtist: DbArtistService,
     private dbAlbum: DbAlbumService,
+    private dbTrack: DbTrackService,
   ) {}
 
   async getAllArtists() {
@@ -41,14 +45,24 @@ export class ArtistService {
     const artist = await this.dbArtist.delete({ id });
 
     if (artist) {
-      const arrayOfAlbums = await this.dbAlbum.findMany({
+      const arrayOfAlbums = this.dbAlbum.findMany({
         key: 'artistId',
         value: id,
       });
 
-      arrayOfAlbums.forEach((item) => {
-        item.artistId = null;
+      const arrayOfTracks = this.dbTrack.findMany({
+        key: 'artistId',
+        value: id,
       });
+
+      const arrayOfEntities = await Promise.all([arrayOfAlbums, arrayOfTracks]);
+
+      arrayOfEntities.forEach((entity) => {
+        entity.forEach((item: Album | Track) => {
+          item.artistId = null;
+        });
+      });
+
       return artist;
     }
     throw new HttpException(`Record with id === ${id} doesn't exist`, 404);

@@ -10,23 +10,11 @@ export interface Album {
 export interface CreateAlbumDto {
   name: string;
   year: number;
-  artistId?: string; // refers to Artist
-}
-
-export interface UpdateAlbumDto {
-  name: string;
-  year: number;
-  artistId: string; // refers to Artist
+  artistId: string | null; // refers to Artist
 }
 
 export const createAlbumSchema = Joi.object({
   name: Joi.string().required(),
   year: Joi.number().required(),
-  artistId: Joi.string(),
-});
-
-export const updateAlbumSchema = Joi.object({
-  name: Joi.string().required(),
-  year: Joi.number().required(),
-  artistId: Joi.string().required(),
+  artistId: Joi.string().allow(null).required(),
 });

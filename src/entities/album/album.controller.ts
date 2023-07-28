@@ -14,12 +14,7 @@ import {
 } from '@nestjs/common';
 import { JoiValidationPipe } from '../utilities/validationPipe';
 import { AlbumService } from './album.service';
-import {
-  CreateAlbumDto,
-  UpdateAlbumDto,
-  createAlbumSchema,
-  updateAlbumSchema,
-} from './interface';
+import { CreateAlbumDto, createAlbumSchema } from './interface';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('album')
@@ -44,8 +39,8 @@ export class AlbumController {
 
   @Put(':id')
   async updateAlbum(
-    @Body(new JoiValidationPipe(updateAlbumSchema))
-    updateAlbumDto: UpdateAlbumDto,
+    @Body(new JoiValidationPipe(createAlbumSchema))
+    updateAlbumDto: CreateAlbumDto,
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
     return await this.albumService.updateAlbum(updateAlbumDto, id);

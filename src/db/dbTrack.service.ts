@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { Album, CreateAlbumDto } from 'src/entities/album/interface';
+import { CreateTrackDto, Track } from 'src/entities/track/interface';
 
-type DataFindMany = { key?: keyof Album; value?: any };
+type DataFindMany = { key?: keyof Track; value?: any };
 
 @Injectable()
-export class DbAlbumService {
-  private db: Array<Album> = [];
+export class DbTrackService {
+  private db: Array<Track> = [];
 
   async findMany({ key, value }: DataFindMany) {
     if (key && value) {
@@ -22,30 +22,30 @@ export class DbAlbumService {
     return this.db.find((item) => item.id === id);
   }
 
-  async create({ data }: { data: CreateAlbumDto }) {
+  async create({ data }: { data: CreateTrackDto }) {
     const id = randomUUID({ disableEntropyCache: true });
 
-    const album = { ...data, id };
-    this.db.push(album);
-    return album;
+    const track = { ...data, id };
+    this.db.push(track);
+    return track;
   }
 
-  async update({ data, id }: { data: CreateAlbumDto; id: string }) {
-    const album = this.db.find((item) => item.id === id);
-    if (album) {
+  async update({ data, id }: { data: CreateTrackDto; id: string }) {
+    const track = this.db.find((item) => item.id === id);
+    if (track) {
       for (const key in data) {
         const value = data[key];
-        album[key] = value;
+        track[key] = value;
       }
     }
-    return album;
+    return track;
   }
 
   async delete({ id }: { id: string }) {
-    const album = this.db.find((item) => item.id === id);
-    if (album) {
+    const track = this.db.find((item) => item.id === id);
+    if (track) {
       this.db = this.db.filter((item) => item.id !== id);
     }
-    return album;
+    return track;
   }
 }
