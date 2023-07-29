@@ -1,6 +1,6 @@
 # Home Library Service
 
-Для валидации схемы юзердто юзается Joi
+A Joi library is used to validate all schemas.
 
 ## Prerequisites
 
@@ -10,8 +10,10 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/kosta4310/nodejs2023Q2-service.git
 ```
+
+## Go to folder `nodejs2023Q2-service` and change the branch to `task1`
 
 ## Installing NPM modules
 
