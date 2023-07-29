@@ -51,7 +51,7 @@ export class DbFavsService {
       if (!isAddedInFavs) {
         this.db[key].push(value);
       }
-      return 'The id added in favorites';
+      return 'The Id added in favorites';
     }
     return entity;
   }

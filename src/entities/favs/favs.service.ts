@@ -17,7 +17,7 @@ export class FavsService {
   async create(data: InputFavs) {
     const res = await this.dbFavs.create(data);
     if (res) {
-      return res;
+      return { message: res };
     }
     throw new HttpException(
       `Record with id === ${data.value} doesn't exist`,
