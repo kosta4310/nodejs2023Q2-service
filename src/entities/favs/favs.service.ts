@@ -1,7 +1,4 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { ArtistService } from '../artist/artist.service';
-import { AlbumService } from '../album/album.service';
-import { TrackService } from '../track/track.service';
 import { InputFavs, DbFavsService } from 'src/db/dbFavs.service';
 
 @Injectable()
