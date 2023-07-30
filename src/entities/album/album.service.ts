@@ -2,12 +2,14 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { DbAlbumService } from 'src/db/dbAlbum.service';
 import { CreateAlbumDto } from './interface';
 import { DbTrackService } from 'src/db/dbTrack.service';
+import { DbFavsService } from 'src/db/dbFavs.service';
 
 @Injectable()
 export class AlbumService {
   constructor(
     private dbAlbum: DbAlbumService,
     private dbTrack: DbTrackService,
+    private dbFavs: DbFavsService,
   ) {}
 
   async getAllAlbums() {
@@ -48,6 +50,8 @@ export class AlbumService {
       arrayOfTracks.forEach((item) => {
         item.albumId = null;
       });
+
+      this.dbFavs.delete({ key: 'albums', value: id });
 
       return album;
     }

@@ -1,10 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { DbTrackService } from 'src/db/dbTrack.service';
 import { CreateTrackDto } from './interface';
+import { DbFavsService } from 'src/db/dbFavs.service';
 
 @Injectable()
 export class TrackService {
-  constructor(private dbTrack: DbTrackService) {}
+  constructor(private dbTrack: DbTrackService, private dbFavs: DbFavsService) {}
 
   async getAllTracks() {
     return await this.dbTrack.findMany({});
@@ -36,6 +37,8 @@ export class TrackService {
   async deleteTrack(id: string) {
     const track = await this.dbTrack.delete({ id });
     if (track) {
+      this.dbFavs.delete({ key: 'tracks', value: id });
+
       return track;
     }
     throw new HttpException(`Record with id === ${id} doesn't exist`, 404);

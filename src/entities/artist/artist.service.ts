@@ -5,6 +5,7 @@ import { DbAlbumService } from 'src/db/dbAlbum.service';
 import { DbTrackService } from 'src/db/dbTrack.service';
 import { Album } from '../album/interface';
 import { Track } from '../track/interface';
+import { DbFavsService } from 'src/db/dbFavs.service';
 
 @Injectable()
 export class ArtistService {
@@ -12,6 +13,7 @@ export class ArtistService {
     private dbArtist: DbArtistService,
     private dbAlbum: DbAlbumService,
     private dbTrack: DbTrackService,
+    private dbFavs: DbFavsService,
   ) {}
 
   async getAllArtists() {
@@ -62,6 +64,8 @@ export class ArtistService {
           item.artistId = null;
         });
       });
+
+      this.dbFavs.delete({ key: 'artists', value: id });
 
       return artist;
     }
