@@ -5,7 +5,7 @@ export class UserLessPassword {
   login: string;
   version: number; // integer number, increments on update
   createdAt: number; // timestamp of creation
-  updatedAt: number; // timestamp o
+  updatedAt: number; // timestamp of update
 
   @Exclude()
   password: string;

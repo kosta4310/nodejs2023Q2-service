@@ -3,12 +3,7 @@ import { InputFavs, DbFavsService } from 'src/db/dbFavs.service';
 
 @Injectable()
 export class FavsService {
-  constructor(
-    // private dbArtist: ArtistService,
-    // private dbAlbum: AlbumService,
-    // private dbTrack: TrackService,
-    private dbFavs: DbFavsService,
-  ) {}
+  constructor(private dbFavs: DbFavsService) {}
 
   async getAllFavs() {
     return await this.dbFavs.findMany();
