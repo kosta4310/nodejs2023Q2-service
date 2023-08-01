@@ -1,5 +1,7 @@
 # Home Library Service
 
+A Joi library is used to validate all schemas.
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
@@ -8,8 +10,10 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/kosta4310/nodejs2023Q2-service.git
 ```
+
+## Go to folder `nodejs2023Q2-service` and change the branch to `task1`
 
 ## Installing NPM modules
 

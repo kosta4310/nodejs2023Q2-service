@@ -1,0 +1,1147 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Home Library Service",
+    "description": "Home music library service",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "login": {
+            "type": "string",
+            "example": "TestUser"
+          },
+          "password": {
+            "type": "string",
+            "example": "test_password"
+          },
+          "version": {
+            "type": "number",
+            "example": 1
+          },
+          "createAt": {
+            "type": "number",
+            "example": 1655000000
+          },
+          "updateAt": {
+            "type": "number",
+            "example": 1655000000
+          }
+        },
+        "required": [
+          "password",
+          "login"
+        ]
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "login": {
+            "type": "string",
+            "example": "TestUser"
+          },
+          "version": {
+            "type": "number",
+            "example": 1
+          },
+          "createAt": {
+            "type": "number",
+            "example": 1655000000
+          },
+          "updateAt": {
+            "type": "number",
+            "example": 1655000000
+          }
+        }
+      },
+      "Artist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Freddie Mercury"
+          },
+          "grammy": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "grammy",
+          "name"
+        ]
+      },
+      "Album": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Innuendo"
+          },
+          "year": {
+            "type": "integer",
+            "example": 1991
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "required": [
+          "year",
+          "name",
+          "artistId"
+        ]
+      },
+      "Track": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "The Show Must Go On"
+          },
+          "artistId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "albumId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "duration": {
+            "type": "integer",
+            "description": "In seconds",
+            "example": 262
+          }
+        },
+        "required": [
+          "artistId",
+          "albumId",
+          "name",
+          "duration"
+        ]
+      },
+      "Favorites": {
+        "type": "object",
+        "properties": {
+          "artists": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Artist"
+            }
+          },
+          "albums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Album"
+            }
+          },
+          "tracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Track"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request. Body does not contain required fields"
+      },
+      "IdNotUUID": {
+        "description": "The id is invalid (not uuid)"
+      },
+      "RecordNotExist": {
+        "description": "Record with the id doesn't exist"
+      },
+      "RecordNotFavorite": {
+        "description": "Record with the id doesn't exist in favorites"
+      }
+    }
+  },
+  "paths": {
+    "/user": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all users",
+        "description": "Gets all users",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create user",
+        "description": "Creates a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "example",
+                "properties": {
+                  "login": {
+                    "type": "string",
+                    "example": "User1",
+                    "description": "The user's login"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": 123,
+                    "description": "The user's password"
+                  }
+                },
+                "required": [
+                  "login",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The user has been created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/user/{userId}": {
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get single user by id",
+        "description": "Get single user by id",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update a user's password",
+        "description": "Update a user's password by ID",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "example",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "description": "The user's old password"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "description": "The user's new password"
+                  }
+                },
+                "required": [
+                  "oldPassword",
+                  "newPassword"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user has been updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "example",
+                  "properties": {
+                    "login": {
+                      "type": "string",
+                      "example": "TestUser"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "createAt": {
+                      "type": "integer",
+                      "example": 1655000000
+                    },
+                    "updateAt": {
+                      "type": "integer",
+                      "example": 1655999999
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "403": {
+            "description": "OldPassowrd is wrong"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete user",
+        "description": "Deletes user by ID.",
+        "responses": {
+          "204": {
+            "description": "The user has been deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      }
+    },
+    "/track": {
+      "get": {
+        "tags": [
+          "Tracks"
+        ],
+        "summary": "Get tracks list",
+        "description": "Gets all library tracks list",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Track"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Tracks"
+        ],
+        "summary": "Add new track",
+        "description": "Add new track information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Track1"
+                  },
+                  "artistId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "albumId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "example": 300,
+                    "description": "In seconds"
+                  }
+                },
+                "required": [
+                  "name",
+                  "duration",
+                  "artistId",
+                  "albumId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Track"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/track/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Tracks"
+        ],
+        "summary": "Get single track by id",
+        "description": "Gets single track by id",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Track"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Tracks"
+        ],
+        "summary": "Update track information",
+        "description": "Update library track information by UUID",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "example",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Bohemian Rhapsody"
+                  },
+                  "artistId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "description": "In seconds",
+                    "example": 355
+                  },
+                  "albumId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "duration"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The track has been updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "example",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Bohemian Rhapsody"
+                    },
+                    "artistId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "nullable": true
+                    },
+                    "duration": {
+                      "type": "integer",
+                      "description": "In seconds",
+                      "example": 355
+                    },
+                    "albumId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tracks"
+        ],
+        "summary": "Delete track",
+        "description": "Delete track from library",
+        "responses": {
+          "204": {
+            "description": "Delelted succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      }
+    },
+    "/album": {
+      "get": {
+        "tags": [
+          "Albums"
+        ],
+        "summary": "Get albums list",
+        "description": "Gets all library alibums list",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Album"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Albums"
+        ],
+        "summary": "Add new album",
+        "description": "Add new album information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "example",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Album1"
+                  },
+                  "year": {
+                    "type": "integer",
+                    "example": 2023
+                  },
+                  "artistId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "year",
+                  "artistId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Album is created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Album"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/album/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Albums"
+        ],
+        "summary": "Get single album by id",
+        "description": "Gets single album by id",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Album"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Albums"
+        ],
+        "summary": "Update album information",
+        "description": "Update library album information by UUID",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "example",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Evanescence"
+                  },
+                  "year": {
+                    "type": "integer",
+                    "example": 1995
+                  },
+                  "artistId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "year"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The album has been updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Album"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Albums"
+        ],
+        "summary": "Delete album",
+        "description": "Delete album from library",
+        "responses": {
+          "204": {
+            "description": "Deleted succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      }
+    },
+    "/artist": {
+      "get": {
+        "tags": [
+          "Artists"
+        ],
+        "summary": "Get all artists",
+        "description": "Gets all artists",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Artist"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Artists"
+        ],
+        "summary": "Add new artist",
+        "description": "Add new artist",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Justin Timberlake"
+                  },
+                  "grammy": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "grammy"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artist"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/artist/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Artists"
+        ],
+        "summary": "Get single artist by id",
+        "description": "Get single artist by id",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artist"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Artists"
+        ],
+        "summary": "Update artist information",
+        "description": "Update artist information by id",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "grammy": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "grammy"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The artist has been updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artist"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Artists"
+        ],
+        "summary": "Delete artist",
+        "description": "Delete artist from library",
+        "responses": {
+          "204": {
+            "description": "Delelted succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      }
+    },
+    "/favs": {
+      "get": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Get all favorites",
+        "description": "Gets all favorites artists, tracks and albums",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Favorites"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/favs/track/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Add track to the favorites",
+        "description": "Add track to the favorites",
+        "responses": {
+          "201": {
+            "description": "Added succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "422": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Delete track from favorites",
+        "description": "Delete track from favorites",
+        "responses": {
+          "204": {
+            "description": "Deleted succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotFavorite"
+          }
+        }
+      }
+    },
+    "/favs/album/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Add album to the favorites",
+        "description": "Add album to the favorites",
+        "responses": {
+          "201": {
+            "description": "Added succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "422": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Delete album from favorites",
+        "description": "Delete album from favorites",
+        "responses": {
+          "204": {
+            "description": "Deleted succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotFavorite"
+          }
+        }
+      }
+    },
+    "/favs/artist/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Add artist to the favorites",
+        "description": "Add artist to the favorites",
+        "responses": {
+          "201": {
+            "description": "Added succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "422": {
+            "$ref": "#/components/responses/RecordNotExist"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Delete artist from favorites",
+        "description": "Delete artist from favorites",
+        "responses": {
+          "204": {
+            "description": "Deleted succesfully"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdNotUUID"
+          },
+          "404": {
+            "$ref": "#/components/responses/RecordNotFavorite"
+          }
+        }
+      }
+    }
+  }
+}
