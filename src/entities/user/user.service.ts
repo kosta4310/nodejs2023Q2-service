@@ -59,7 +59,7 @@ export class UserService {
         dto.newPassword = newHashedPassword;
 
         const user = await this.prisma.user.update({
-          data: dto,
+          data: { ...dto, version: { increment: 1 } },
           where: { id },
         });
 

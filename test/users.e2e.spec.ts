@@ -99,6 +99,8 @@ describe('Users (e2e)', () => {
 
       const { id, version, login, createdAt, updatedAt } = response.body;
 
+      console.log(response.error);
+
       expect(response.status).toBe(StatusCodes.CREATED);
 
       expect(login).toBe(createUserDto.login);
@@ -162,6 +164,7 @@ describe('Users (e2e)', () => {
           oldPassword: createUserDto.password,
           newPassword: 'NEW_PASSWORD',
         });
+      console.log(updateResponse.error);
 
       expect(updateResponse.statusCode).toBe(StatusCodes.OK);
 
