@@ -1,12 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { DbUserService } from 'src/db/dbUser.service';
 import { CreateUserDto, UpdatePasswordDto } from './interface';
 import { getHashedPassword } from './utils/getHash';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private dbUser: DbUserService, private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAllUsers() {
     const users = await this.prisma.user.findMany();
@@ -16,12 +15,10 @@ export class UserService {
       createdAt: new Date(user.createdAt).valueOf(),
       updatedAt: new Date(user.updatedAt).valueOf(),
     }));
-    // return await this.dbUser.findMany();
   }
 
   async getUserById({ id }) {
     const user = await this.prisma.user.findUnique({ where: { id } });
-    // const user = await this.dbUser.findUnique({ id });
 
     if (user) {
       return {
@@ -44,12 +41,10 @@ export class UserService {
       createdAt: new Date(user.createdAt).valueOf(),
       updatedAt: new Date(user.updatedAt).valueOf(),
     };
-    // return await this.dbUser.create({ data: dto });
   }
 
   async updatePassword(dto: UpdatePasswordDto, id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
-    // const user = await this.dbUser.findUnique({ id });
 
     const oldHashedPassword = getHashedPassword(dto.oldPassword);
 
@@ -59,7 +54,7 @@ export class UserService {
         dto.newPassword = newHashedPassword;
 
         const user = await this.prisma.user.update({
-          data: { ...dto, version: { increment: 1 } },
+          data: { password: dto.newPassword, version: { increment: 1 } },
           where: { id },
         });
 
@@ -68,7 +63,6 @@ export class UserService {
           createdAt: new Date(user.createdAt).valueOf(),
           updatedAt: new Date(user.updatedAt).valueOf(),
         };
-        // return await this.dbUser.update({ data: dto, id });
       }
       throw new HttpException(`OldPassword is wrong`, 403);
     }
@@ -76,15 +70,13 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.prisma.user.delete({ where: { id } });
-    // const user = await this.dbUser.delete({ id });
-    if (user) {
-      return {
-        ...user,
-        createdAt: new Date(user.createdAt).valueOf(),
-        updatedAt: new Date(user.updatedAt).valueOf(),
-      };
+    try {
+      await this.prisma.user.delete({ where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 }
