@@ -8,24 +8,14 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async getAllUsers() {
-    const users = await this.prisma.user.findMany();
-
-    return users.map((user) => ({
-      ...user,
-      createdAt: new Date(user.createdAt).valueOf(),
-      updatedAt: new Date(user.updatedAt).valueOf(),
-    }));
+    return await this.prisma.user.findMany();
   }
 
   async getUserById({ id }) {
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (user) {
-      return {
-        ...user,
-        createdAt: new Date(user.createdAt).valueOf(),
-        updatedAt: new Date(user.updatedAt).valueOf(),
-      };
+      return user;
     }
 
     throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
@@ -34,13 +24,7 @@ export class UserService {
   async createUser(dto: CreateUserDto) {
     const hashedPassword = getHashedPassword(dto.password);
     dto.password = hashedPassword;
-    const user = await this.prisma.user.create({ data: dto });
-
-    return {
-      ...user,
-      createdAt: new Date(user.createdAt).valueOf(),
-      updatedAt: new Date(user.updatedAt).valueOf(),
-    };
+    return await this.prisma.user.create({ data: dto });
   }
 
   async updatePassword(dto: UpdatePasswordDto, id: string) {
@@ -53,16 +37,10 @@ export class UserService {
         const newHashedPassword = getHashedPassword(dto.newPassword);
         dto.newPassword = newHashedPassword;
 
-        const user = await this.prisma.user.update({
+        return await this.prisma.user.update({
           data: { password: dto.newPassword, version: { increment: 1 } },
           where: { id },
         });
-
-        return {
-          ...user,
-          createdAt: new Date(user.createdAt).valueOf(),
-          updatedAt: new Date(user.updatedAt).valueOf(),
-        };
       }
       throw new HttpException(`OldPassword is wrong`, 403);
     }
