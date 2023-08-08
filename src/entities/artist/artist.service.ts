@@ -37,8 +37,10 @@ export class ArtistService {
     try {
       await this.prisma.artist.delete({ where: { id } });
     } catch (error) {
-      console.log(error);
-      throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
   }
 }

@@ -14,12 +14,14 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "start:migrate:dev": "npx prisma migrate dev --name init && npm run start:dev",
+    "start:migrate:prod": "npx prisma migrate deploy && npm run start:prod",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --testMatch \"<rootDir>/*.spec.ts\" --config ./test/jest-e2e.json --noStackTrace --runInBand",
     "test:auth": "cross-env TEST_MODE=auth jest --config ./test/jest-e2e.json --noStackTrace --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "scan": "docker scout cves nodejs2023q2-service-app:latest & docker scout cves nodejs2023q2-service-database:latest"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
