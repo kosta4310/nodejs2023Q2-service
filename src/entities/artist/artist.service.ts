@@ -1,8 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { DbArtistService } from 'src/db/dbArtist.service';
 import { CreateArtistDto } from './interface';
-import { DbAlbumService } from 'src/db/dbAlbum.service';
-import { DbTrackService } from 'src/db/dbTrack.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
