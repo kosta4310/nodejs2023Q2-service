@@ -20,3 +20,57 @@ model User {
 
   @@map("users")
 }
+
+model Artist {
+  id        String     @id @default(uuid())
+  name      String
+  grammy    Boolean
+  Album     Album[]
+  Track     Track[]
+  FavArtist FavArtist?
+
+  @@map("artists")
+}
+
+model Album {
+  id       String    @id @default(uuid())
+  name     String
+  year     Int
+  artistId String?
+  Artist   Artist?   @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  Track    Track[]
+  FavAlbum FavAlbum?
+
+  @@map("albums")
+}
+
+model Track {
+  id       String    @id @default(uuid())
+  name     String
+  artistId String?
+  albumId  String?
+  duration Int
+  Artist   Artist?   @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  Album    Album?    @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  FavTrack FavTrack?
+
+  @@map("tracks")
+}
+
+model FavArtist {
+  id       Int    @id @default(autoincrement())
+  artistId String @unique
+  Artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+}
+
+model FavAlbum {
+  id      Int    @id @default(autoincrement())
+  albumId String @unique
+  Album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+}
+
+model FavTrack {
+  id      Int    @id @default(autoincrement())
+  trackId String @unique
+  Track   Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+}
