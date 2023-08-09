@@ -5,12 +5,6 @@ import { PrismaService } from 'src/prisma.service';
 export class FavsService {
   constructor(private prisma: PrismaService) {}
 
-  private accordingDb = {
-    artists: this.prisma.favArtist,
-    albums: this.prisma.favAlbum,
-    tracks: this.prisma.favTrack,
-  };
-
   async getAllFavs() {
     const favTracks = this.prisma.favTrack.findMany({
       select: { Track: true },
