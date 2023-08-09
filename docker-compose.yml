@@ -27,9 +27,15 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
       PORT_DB: ${PORT_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     networks:
       - custom_network
     restart: always
+    command: ["postgres", "-c", "logging_collector=on", "-c", "log_directory=./db_logs", "-c", "log_filename=postgresql.log", "-c", "log_statement=all"]
 
 networks:
   custom_network:
+    driver: bridge
+volumes:
+  pgdata:
