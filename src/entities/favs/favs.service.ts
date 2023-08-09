@@ -1,5 +1,4 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { InputFavs } from 'src/db/dbFavs.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
