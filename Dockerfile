@@ -16,4 +16,4 @@ COPY --from=builder /app/tsconfig.build.json ./tsconfig.build.json
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/doc ./doc
 EXPOSE $PORT
-CMD [  "npm", "run", "start:migrate:dev" ]
+CMD [  "npm", "run", "start:migrate:prod" ]
