@@ -1,23 +1,18 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { DbAlbumService } from 'src/db/dbAlbum.service';
 import { CreateAlbumDto } from './interface';
-import { DbTrackService } from 'src/db/dbTrack.service';
-import { DbFavsService } from 'src/db/dbFavs.service';
+
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class AlbumService {
-  constructor(
-    private dbAlbum: DbAlbumService,
-    private dbTrack: DbTrackService,
-    private dbFavs: DbFavsService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAllAlbums() {
-    return await this.dbAlbum.findMany({});
+    return await this.prisma.album.findMany();
   }
 
   async getAlbumById({ id }) {
-    const album = await this.dbAlbum.findUnique({ id });
+    const album = await this.prisma.album.findUnique({ where: { id } });
 
     if (album) {
       return album;
@@ -27,34 +22,28 @@ export class AlbumService {
   }
 
   async createAlbum(dto: CreateAlbumDto) {
-    return await this.dbAlbum.create({ data: dto });
+    return await this.prisma.album.create({ data: dto });
   }
 
   async updateAlbum(dto: CreateAlbumDto, id: string) {
-    const album = await this.dbAlbum.findUnique({ id });
-
-    if (album) {
-      return await this.dbAlbum.update({ data: dto, id });
+    try {
+      return await this.prisma.album.update({ data: dto, where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 
   async deleteAlbum(id: string) {
-    const album = await this.dbAlbum.delete({ id });
-    if (album) {
-      const arrayOfTracks = await this.dbTrack.findMany({
-        key: 'albumId',
-        value: id,
-      });
-
-      arrayOfTracks.forEach((item) => {
-        item.albumId = null;
-      });
-
-      this.dbFavs.delete({ key: 'albums', value: id });
-
-      return album;
+    try {
+      await this.prisma.album.delete({ where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 }

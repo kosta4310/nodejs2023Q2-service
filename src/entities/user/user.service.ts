@@ -1,18 +1,18 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { DbUserService } from 'src/db/dbUser.service';
 import { CreateUserDto, UpdatePasswordDto } from './interface';
 import { getHashedPassword } from './utils/getHash';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private dbUser: DbUserService) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAllUsers() {
-    return await this.dbUser.findMany();
+    return await this.prisma.user.findMany();
   }
 
   async getUserById({ id }) {
-    const user = await this.dbUser.findUnique({ id });
+    const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (user) {
       return user;
@@ -24,11 +24,11 @@ export class UserService {
   async createUser(dto: CreateUserDto) {
     const hashedPassword = getHashedPassword(dto.password);
     dto.password = hashedPassword;
-    return await this.dbUser.create({ data: dto });
+    return await this.prisma.user.create({ data: dto });
   }
 
   async updatePassword(dto: UpdatePasswordDto, id: string) {
-    const user = await this.dbUser.findUnique({ id });
+    const user = await this.prisma.user.findUnique({ where: { id } });
 
     const oldHashedPassword = getHashedPassword(dto.oldPassword);
 
@@ -37,7 +37,10 @@ export class UserService {
         const newHashedPassword = getHashedPassword(dto.newPassword);
         dto.newPassword = newHashedPassword;
 
-        return await this.dbUser.update({ data: dto, id });
+        return await this.prisma.user.update({
+          data: { password: dto.newPassword, version: { increment: 1 } },
+          where: { id },
+        });
       }
       throw new HttpException(`OldPassword is wrong`, 403);
     }
@@ -45,10 +48,13 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.dbUser.delete({ id });
-    if (user) {
-      return user;
+    try {
+      await this.prisma.user.delete({ where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 }

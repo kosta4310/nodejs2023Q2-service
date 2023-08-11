@@ -1,18 +1,17 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { DbTrackService } from 'src/db/dbTrack.service';
 import { CreateTrackDto } from './interface';
-import { DbFavsService } from 'src/db/dbFavs.service';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class TrackService {
-  constructor(private dbTrack: DbTrackService, private dbFavs: DbFavsService) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAllTracks() {
-    return await this.dbTrack.findMany({});
+    return await this.prisma.track.findMany();
   }
 
   async getTrackById({ id }) {
-    const track = await this.dbTrack.findUnique({ id });
+    const track = await this.prisma.track.findUnique({ where: { id } });
 
     if (track) {
       return track;
@@ -22,25 +21,28 @@ export class TrackService {
   }
 
   async createTrack(dto: CreateTrackDto) {
-    return await this.dbTrack.create({ data: dto });
+    return await this.prisma.track.create({ data: dto });
   }
 
   async updateTrack(dto: CreateTrackDto, id: string) {
-    const track = await this.dbTrack.findUnique({ id });
-
-    if (track) {
-      return await this.dbTrack.update({ data: dto, id });
+    try {
+      return await this.prisma.track.update({ data: dto, where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 
   async deleteTrack(id: string) {
-    const track = await this.dbTrack.delete({ id });
-    if (track) {
-      this.dbFavs.delete({ key: 'tracks', value: id });
-
-      return track;
+    try {
+      await this.prisma.track.delete({ where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 }

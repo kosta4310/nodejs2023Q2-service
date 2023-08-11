@@ -20,34 +20,34 @@ export class FavsController {
 
   @Post('track/:id')
   async addTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    return await this.favsService.create({ key: 'tracks', value: id });
+    return await this.favsService.createFavsTrack({ trackId: id });
   }
 
   @HttpCode(204)
   @Delete('track/:id')
   async deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.favsService.deleteEntity({ key: 'tracks', value: id });
+    return this.favsService.deleteFavsTrack({ trackId: id });
   }
 
   @Post('artist/:id')
   async addArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    return await this.favsService.create({ key: 'artists', value: id });
+    return await this.favsService.createFavsArtist({ artistId: id });
   }
 
   @HttpCode(204)
   @Delete('artist/:id')
   async deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.favsService.deleteEntity({ key: 'artists', value: id });
+    return this.favsService.deleteFavsArtist({ artistId: id });
   }
 
   @Post('album/:id')
   async addAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    return await this.favsService.create({ key: 'albums', value: id });
+    return await this.favsService.createFavsAlbum({ albumId: id });
   }
 
   @HttpCode(204)
   @Delete('album/:id')
   async deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.favsService.deleteEntity({ key: 'albums', value: id });
+    return this.favsService.deleteFavsAlbum({ albumId: id });
   }
 }

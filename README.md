@@ -1,11 +1,7 @@
 # Home Library Service
 
 A Joi library is used to validate all schemas.
-
-## Prerequisites
-
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+A Prisma was used as an ORM to store and update data.
 
 ## Downloading
 
@@ -13,7 +9,7 @@ A Joi library is used to validate all schemas.
 git clone https://github.com/kosta4310/nodejs2023Q2-service.git
 ```
 
-## Go to folder `nodejs2023Q2-service` and change the branch to `task1`
+## Go to folder `nodejs2023Q2-service` and change the branch to `task2`
 
 ## Installing NPM modules
 
@@ -21,15 +17,24 @@ git clone https://github.com/kosta4310/nodejs2023Q2-service.git
 npm install
 ```
 
-## Running application
+## Running a Docker container
+
+A Docker Desktop must be running.
+You need change a name of file `.env.example` to `.env`
 
 ```
-npm start
+docker compose up
 ```
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+## Scan for security vulnerabilities
+
+```
+npm run scan
+```
 
 ## Testing
 

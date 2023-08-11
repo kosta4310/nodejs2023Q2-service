@@ -1,74 +1,46 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { DbArtistService } from 'src/db/dbArtist.service';
 import { CreateArtistDto } from './interface';
-import { DbAlbumService } from 'src/db/dbAlbum.service';
-import { DbTrackService } from 'src/db/dbTrack.service';
-import { Album } from '../album/interface';
-import { Track } from '../track/interface';
-import { DbFavsService } from 'src/db/dbFavs.service';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(
-    private dbArtist: DbArtistService,
-    private dbAlbum: DbAlbumService,
-    private dbTrack: DbTrackService,
-    private dbFavs: DbFavsService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAllArtists() {
-    return await this.dbArtist.findMany({});
+    return await this.prisma.artist.findMany();
   }
 
   async getArtistById({ id }) {
-    const artist = await this.dbArtist.findUnique({ id });
-
-    if (artist) {
-      return artist;
+    const user = await this.prisma.artist.findUnique({ where: { id } });
+    if (user) {
+      return user;
     }
-
     throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 
   async createArtist(dto: CreateArtistDto) {
-    return await this.dbArtist.create({ data: dto });
+    return await this.prisma.artist.create({ data: dto });
   }
 
   async updateArtist(dto: CreateArtistDto, id: string) {
-    const artist = await this.dbArtist.findUnique({ id });
-
-    if (artist) {
-      return await this.dbArtist.update({ data: dto, id });
+    try {
+      return await this.prisma.artist.update({ data: dto, where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 
   async deleteArtist(id: string) {
-    const artist = await this.dbArtist.delete({ id });
-
-    if (artist) {
-      const arrayOfAlbums = this.dbAlbum.findMany({
-        key: 'artistId',
-        value: id,
-      });
-
-      const arrayOfTracks = this.dbTrack.findMany({
-        key: 'artistId',
-        value: id,
-      });
-
-      const arrayOfEntities = await Promise.all([arrayOfAlbums, arrayOfTracks]);
-
-      arrayOfEntities.forEach((entity) => {
-        entity.forEach((item: Album | Track) => {
-          item.artistId = null;
-        });
-      });
-
-      this.dbFavs.delete({ key: 'artists', value: id });
-
-      return artist;
+    try {
+      await this.prisma.artist.delete({ where: { id } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
+      }
+      throw error;
     }
-    throw new HttpException(`Record with id === ${id} doesn't exist`, 404);
   }
 }
