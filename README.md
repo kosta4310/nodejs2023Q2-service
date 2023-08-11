@@ -1,7 +1,7 @@
 # Home Library Service
 
 A Joi library is used to validate all schemas.
-A Prisma was used as an ORM.
+A Prisma was used as an ORM to store and update data.
 
 ## Downloading
 
@@ -29,6 +29,12 @@ docker compose up
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+## Scan for security vulnerabilities
+
+```
+npm run scan
+```
 
 ## Testing
 
