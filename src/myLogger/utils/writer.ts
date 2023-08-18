@@ -75,7 +75,7 @@ export class Writer {
       } else throw new InternalServerErrorException('Internal server error');
     }
     const msgSize = Buffer.byteLength(msg, 'utf-8');
-    if (fileSize + msgSize > +process.env.MAX_SIZE_LOG_FILE) {
+    if (fileSize + msgSize > +process.env.MAX_SIZE_LOG_FILE * 1024) {
       if (errorStream) {
         this.initNameErrorFile = new Date().toJSON();
       } else this.initNameLogFile = new Date().toJSON();
