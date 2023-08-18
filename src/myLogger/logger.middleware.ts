@@ -21,7 +21,11 @@ export class LoggerMiddleware implements NestMiddleware {
       )},body ${JSON.stringify(body)},response status code ${statusCode}`;
 
       if (statusCode < 400) {
-        this.myLogger.log(logMessage, url);
+        if (statusCode > 300) {
+          this.myLogger.verbose(logMessage, url);
+        } else if (statusCode > 200) {
+          this.myLogger.log(logMessage, url);
+        } else this.myLogger.debug(logMessage, url);
       }
     });
   }

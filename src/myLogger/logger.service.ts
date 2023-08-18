@@ -43,10 +43,10 @@ export class MyLogger extends ConsoleLogger {
     }
   }
 
-  debug(message: string) {
+  debug(message: string, url: string) {
     super.debug(message);
     if (this.logLevels.includes('debug')) {
-      this.writer.write(message, 'log');
+      this.writer.write(`${url} ${message}`, 'log');
     }
   }
 
