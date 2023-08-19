@@ -1,7 +1,13 @@
 # Home Library Service
 
 A Joi library is used to validate all schemas.
+
 A Prisma was used as an ORM to store and update data.
+
+The app in docker container is running on develop mode by default.
+
+To run on prod mode you should change script `CMD [ "npm", "run", "start:migrate:dev" ]`
+to `CMD [ "npm", "run", "start:migrate:prod" ]`.
 
 ## Downloading
 
@@ -40,6 +46,10 @@ Log levels:
 - 2 - Information about some normal but important event.
 - 3 - Information about redirection
 - 4 - Information about respose with status code 1XX
+
+## Authentication and Authorization
+
+The refresh route protected a refresh token. Send refresh token in body as { refreshToken } to get new pair of Access token and Refresh token.
 
 ## Testing
 
