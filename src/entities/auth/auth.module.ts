@@ -7,10 +7,17 @@ import { UserService } from '../user/user.service';
 import { PrismaService } from 'src/prisma.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 
 @Module({
   imports: [PassportModule, UserModule, JwtModule.register({})],
-  providers: [AuthService, UserService, JwtStrategy, PrismaService],
+  providers: [
+    AuthService,
+    UserService,
+    JwtStrategy,
+    PrismaService,
+    RefreshStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
