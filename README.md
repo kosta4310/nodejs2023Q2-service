@@ -38,7 +38,11 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Logging
 
-On host is a folder `my_logs` that bind with container. There are all logs.
+On host is a folder `my_logs` that bind with container. All logs are split on two file types:
+
+- all logs except error logs(5XX)
+- error logs(5XX)
+
 Log levels:
 
 - 0 - UncaughtException,unhandledRejection, information about HTTP Exception 5XX
