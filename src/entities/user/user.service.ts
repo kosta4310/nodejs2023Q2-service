@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto, UpdatePasswordDto } from './interface';
 import { getHashedPassword } from './utils/getHash';
 import { PrismaService } from 'src/prisma.service';
@@ -24,7 +24,13 @@ export class UserService {
   async createUser(dto: CreateUserDto) {
     const hashedPassword = getHashedPassword(dto.password);
     dto.password = hashedPassword;
-    return await this.prisma.user.create({ data: dto });
+    try {
+      return await this.prisma.user.create({ data: dto });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new HttpException(`User with this login already exist`, 409);
+      }
+    }
   }
 
   async updatePassword(dto: UpdatePasswordDto, id: string) {
@@ -56,5 +62,21 @@ export class UserService {
       }
       throw error;
     }
+  }
+
+  async checkPassword({ login, password }: CreateUserDto) {
+    const user = await this.prisma.user.findFirst({ where: { login } });
+
+    if (!user) {
+      throw new ForbiddenException(`Not allowed access`);
+    }
+
+    const hashedPassword = getHashedPassword(password);
+
+    if (hashedPassword !== user.password) {
+      throw new ForbiddenException(`Not allowed access`);
+    }
+
+    return user;
   }
 }
