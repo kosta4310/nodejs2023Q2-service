@@ -17,4 +17,4 @@ COPY --from=builder /app/src ./src
 COPY --from=builder /app/doc ./doc
 RUN npx prisma generate
 EXPOSE $PORT
-CMD [  "npm", "run", "start:migrate:prod" ]
+CMD [  "npm", "run", "start:migrate:dev" ]
