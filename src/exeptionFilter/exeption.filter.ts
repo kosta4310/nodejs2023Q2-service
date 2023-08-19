@@ -31,7 +31,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
       errorContent = 'Internal Server Error';
     }
-    console.log('error', exception);
 
     const responseBody = {
       statusCode: httpStatus,
