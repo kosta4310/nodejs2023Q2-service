@@ -9,7 +9,7 @@ A Prisma was used as an ORM to store and update data.
 git clone https://github.com/kosta4310/nodejs2023Q2-service.git
 ```
 
-## Go to folder `nodejs2023Q2-service` and change the branch to `task2`
+## Go to folder `nodejs2023Q2-service` and change the branch to `task3`
 
 ## Installing NPM modules
 
@@ -30,27 +30,20 @@ After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
-## Scan for security vulnerabilities
+## Logging
 
-```
-npm run scan
-```
+On host is a folder `my_logs` that bind with container. There are all logs.
+Log levels:
+
+- 0 - UncaughtException,unhandledRejection, information about HTTP Exception 5XX
+- 1 - Information about HTTP Exceptions 4XX
+- 2 - Information about some normal but important event.
+- 3 - Information about redirection
+- 4 - Information about respose with status code 1XX
 
 ## Testing
 
 After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
 
 To run all test with authorization
 
