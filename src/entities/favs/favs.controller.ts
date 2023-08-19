@@ -6,9 +6,12 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
+import { JwtAccessAuthGuard } from '../auth/guard/jwt-auth.guard';
 
+@UseGuards(JwtAccessAuthGuard)
 @Controller('favs')
 export class FavsController {
   constructor(private favsService: FavsService) {}

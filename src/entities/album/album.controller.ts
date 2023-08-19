@@ -9,13 +9,16 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { JoiValidationPipe } from '../utilities/validationPipe';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto, createAlbumSchema } from './interface';
+import { JwtAccessAuthGuard } from '../auth/guard/jwt-auth.guard';
 
+@UseGuards(JwtAccessAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('album')
 export class AlbumController {

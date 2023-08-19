@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
@@ -21,7 +22,9 @@ import {
 } from './interface';
 import { JoiValidationPipe } from '../utilities/validationPipe';
 import { UserTransformResponse } from './userTransformResponse';
+import { JwtAccessAuthGuard } from '../auth/guard/jwt-auth.guard';
 
+@UseGuards(JwtAccessAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
 export class UserController {

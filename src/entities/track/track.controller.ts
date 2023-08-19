@@ -9,13 +9,16 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { JoiValidationPipe } from '../utilities/validationPipe';
 import { TrackService } from './track.service';
 import { CreateTrackDto, createTrackSchema } from './interface';
+import { JwtAccessAuthGuard } from '../auth/guard/jwt-auth.guard';
 
+@UseGuards(JwtAccessAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('track')
 export class TrackController {

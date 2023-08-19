@@ -11,6 +11,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { LoggerModule } from './myLogger/logger.module';
 import { LoggerMiddleware } from './myLogger/logger.middleware';
 import { MyLogger } from './myLogger/logger.service';
+import { AuthModule } from './entities/auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MyLogger } from './myLogger/logger.service';
     TrackModule,
     FavsModule,
     LoggerModule,
+    AuthModule,
   ],
   providers: [
     AppService,

@@ -9,13 +9,16 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto, createArtistSchema } from './interface';
 import { JoiValidationPipe } from '../utilities/validationPipe';
+import { JwtAccessAuthGuard } from '../auth/guard/jwt-auth.guard';
 
+@UseGuards(JwtAccessAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('artist')
 export class ArtistController {
