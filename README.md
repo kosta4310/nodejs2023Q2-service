@@ -1,15 +1,21 @@
 # Home Library Service
 
-## Prerequisites
+A Joi library is used to validate all schemas.
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+A Prisma was used as an ORM to store and update data.
+
+The app in docker container is running on develop mode by default.
+
+To run on prod mode you should change script `CMD [ "npm", "run", "start:migrate:dev" ]`
+to `CMD [ "npm", "run", "start:migrate:prod" ]`.
 
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/kosta4310/nodejs2023Q2-service.git
 ```
+
+## Go to folder `nodejs2023Q2-service` and change the branch to `task3`
 
 ## Installing NPM modules
 
@@ -17,31 +23,41 @@ git clone {repository URL}
 npm install
 ```
 
-## Running application
+## Running a Docker container
+
+A Docker Desktop must be running.
+You need change a name of file `.env.example` to `.env`
 
 ```
-npm start
+docker compose up
 ```
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
+## Logging
+
+On host is a folder `my_logs` that bind with container. All logs are split on two file types:
+
+- all logs except error logs(5XX)
+- error logs(5XX)
+
+Log levels:
+
+- 0 - UncaughtException,unhandledRejection, information about HTTP Exception 5XX
+- 1 - Information about HTTP Exceptions 4XX
+- 2 - Information about some normal but important event.
+- 3 - Information about redirection
+- 4 - Information about respose with status code 1XX
+
+## Authentication and Authorization
+
+The refresh route protected a refresh token. Send refresh token in body as { refreshToken } to get new pair of Access token and Refresh token.
+
 ## Testing
 
 After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
 
 To run all test with authorization
 
